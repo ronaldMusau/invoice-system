@@ -35,12 +35,14 @@ namespace InvoiceSystem.Data
             modelBuilder.Entity<InvoiceItem>()
                 .HasOne(ii => ii.Invoice)
                 .WithMany(i => i.Items)
-                .HasForeignKey(ii => ii.InvoiceId);
+                .HasForeignKey(ii => ii.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User)
                 .WithMany()
-                .HasForeignKey(n => n.UserId);
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

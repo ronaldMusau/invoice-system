@@ -188,3 +188,4 @@ C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\De
 C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\InvoiceSystem.pdb
 C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\InvoiceSystem.genruntimeconfig.cache
 C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\ref\InvoiceSystem.dll
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\InvoiceSystem.sourcelink.json
