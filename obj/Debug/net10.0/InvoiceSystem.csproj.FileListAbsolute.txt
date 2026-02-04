@@ -1,0 +1,8 @@
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.csproj.AssemblyReference.cache
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.AssemblyInfoInputs.cache
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.AssemblyInfo.cs
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.csproj.CoreCompileInputs.cache
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net10.0\InvoiceSystem.MvcApplicationPartsAssemblyInfo.cache
