@@ -177,7 +177,7 @@ namespace InvoiceSystem.Controllers
                     .FirstOrDefaultAsync(i => i.Id == invoice.Id);
 
                 // Create notification for assigned user
-                var notification = new Notification
+                var userNotification = new Notification
                 {
                     Message = $"New invoice #{invoice.InvoiceNumber} has been assigned to you for {invoice.CustomerName}",
                     CreatedAt = DateTime.UtcNow,
@@ -185,19 +185,19 @@ namespace InvoiceSystem.Controllers
                     UserId = invoice.AssignedUserId
                 };
 
-                _context.Notifications.Add(notification);
+                _context.Notifications.Add(userNotification);
                 await _context.SaveChangesAsync();
 
-                // Send real-time notification via SignalR
+                // Send real-time notification via SignalR to assigned user
                 try
                 {
                     await _hubContext.Clients.User(invoice.AssignedUserId.ToString())
-                        .SendAsync("ReceiveNotification", notification.Message);
+                        .SendAsync("ReceiveNotification", userNotification.Message);
                 }
                 catch (Exception ex)
                 {
                     // Log but don't fail the request if SignalR fails
-                    Console.WriteLine($"SignalR notification failed: {ex.Message}");
+                    Console.WriteLine($"SignalR notification to user failed: {ex.Message}");
                 }
 
                 return CreatedAtAction(
@@ -216,33 +216,108 @@ namespace InvoiceSystem.Controllers
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateInvoiceStatus(int id, [FromBody] UpdateInvoiceStatusDto updateStatusDto)
         {
-            var invoice = await _context.Invoices.FindAsync(id);
-            if (invoice == null)
-                return NotFound();
-
-            // Check authorization
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "User";
-
-            if (string.IsNullOrEmpty(userIdClaim))
-                return Unauthorized();
-
-            var userId = int.Parse(userIdClaim);
-
-            if (userRole != "Admin" && invoice.AssignedUserId != userId)
-                return Forbid();
-
-            // Validate status
-            var validStatuses = new[] { "Pending", "Paid", "Overdue", "Cancelled" };
-            if (!validStatuses.Contains(updateStatusDto.Status))
+            try
             {
-                return BadRequest(new { message = "Invalid status" });
+                var invoice = await _context.Invoices
+                    .Include(i => i.AssignedUser)
+                    .Include(i => i.CreatedByAdmin)
+                    .FirstOrDefaultAsync(i => i.Id == id);
+
+                if (invoice == null)
+                    return NotFound();
+
+                // Check authorization
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "User";
+
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized();
+
+                var userId = int.Parse(userIdClaim);
+
+                if (userRole != "Admin" && invoice.AssignedUserId != userId)
+                    return Forbid();
+
+                // Validate status
+                var validStatuses = new[] { "Pending", "Paid", "Overdue", "Cancelled" };
+                if (!validStatuses.Contains(updateStatusDto.Status))
+                {
+                    return BadRequest(new { message = "Invalid status" });
+                }
+
+                // Get old status for notification message
+                var oldStatus = invoice.Status;
+                invoice.Status = updateStatusDto.Status;
+
+                // Update accepted date if status changed to Paid
+                if (updateStatusDto.Status == "Paid")
+                {
+                    invoice.AcceptedDate = DateTime.UtcNow;
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Create notifications based on who is updating
+                if (userRole == "User")
+                {
+                    // User updated invoice status - notify admin
+                    if (invoice.CreatedByAdminId.HasValue)
+                    {
+                        var adminNotification = new Notification
+                        {
+                            Message = $"Invoice #{invoice.InvoiceNumber} for {invoice.CustomerName} has been marked as {updateStatusDto.Status} by {invoice.AssignedUser.Username}",
+                            CreatedAt = DateTime.UtcNow,
+                            IsRead = false,
+                            UserId = invoice.CreatedByAdminId.Value
+                        };
+
+                        _context.Notifications.Add(adminNotification);
+                        await _context.SaveChangesAsync();
+
+                        // Send real-time notification to admin
+                        try
+                        {
+                            await _hubContext.Clients.User(invoice.CreatedByAdminId.Value.ToString())
+                                .SendAsync("ReceiveNotification", adminNotification.Message);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"SignalR notification to admin failed: {ex.Message}");
+                        }
+                    }
+                }
+                else if (userRole == "Admin")
+                {
+                    // Admin updated invoice status - notify user
+                    var userNotification = new Notification
+                    {
+                        Message = $"Invoice #{invoice.InvoiceNumber} for {invoice.CustomerName} has been updated from {oldStatus} to {updateStatusDto.Status} by admin",
+                        CreatedAt = DateTime.UtcNow,
+                        IsRead = false,
+                        UserId = invoice.AssignedUserId
+                    };
+
+                    _context.Notifications.Add(userNotification);
+                    await _context.SaveChangesAsync();
+
+                    // Send real-time notification to user
+                    try
+                    {
+                        await _hubContext.Clients.User(invoice.AssignedUserId.ToString())
+                            .SendAsync("ReceiveNotification", userNotification.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"SignalR notification to user failed: {ex.Message}");
+                    }
+                }
+
+                return Ok(new { message = "Invoice status updated successfully" });
             }
-
-            invoice.Status = updateStatusDto.Status;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Invoice status updated successfully" });
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Failed to update invoice status: {ex.Message}" });
+            }
         }
 
         // GET: api/invoices/5/download
