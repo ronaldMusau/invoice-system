@@ -1,1105 +1,614 @@
-﻿# Invoice Management System
+﻿Invoice Management System Backend
+A comprehensive invoice management system backend built with ASP.NET Core Web API, featuring JWT authentication, role-based access control, real-time notifications, and PDF generation.
 
-A full-featured invoice management system built with ASP.NET Core Web API, featuring role-based access control, real-time notifications, and PDF generation capabilities.
+📋 Table of Contents
+Overview
 
-## Table of Contents
+Features
 
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Database Schema](#database-schema)
-- [Authentication & Authorization](#authentication--authorization)
-- [Real-time Notifications](#real-time-notifications)
-- [PDF Generation](#pdf-generation)
+Project Structure
 
----
+API Documentation
 
-## Overview
+Database Schema
 
-This Invoice Management System is designed to streamline invoice creation, management, and tracking. It supports two user roles: **Admin** and **User**. Admins can create and assign invoices to users, while users can view their assigned invoices, update payment statuses, and download PDF copies.
+Getting Started
 
-### Key Capabilities
+Authentication
 
-- **User Registration & Authentication**: Secure JWT-based authentication
-- **Role-Based Access Control**: Admin and User roles with different permissions
-- **Invoice Management**: Create, read, update, and delete invoices
-- **Real-time Notifications**: SignalR-powered instant notifications
-- **PDF Generation**: Generate professional invoice PDFs
-- **Payment Tracking**: Track payment status and history
+Real-time Notifications
 
----
+Deployment
 
-## Features
+📖 Overview
+This is a robust backend system for managing invoices with support for:
 
-### For Admins
-- ✅ Create and assign invoices to users
-- ✅ View all invoices across the system
-- ✅ Update invoice details and status
-- ✅ Delete invoices
-- ✅ Monitor payment statuses
-- ✅ Access analytics and statistics
+Multi-role system (Admin and User)
 
-### For Users
-- ✅ View assigned invoices
-- ✅ Update payment status (mark as paid)
-- ✅ Download invoice PDFs
-- ✅ Receive real-time notifications for new invoices
-- ✅ View payment history
-- ✅ Track pending invoices
+JWT-based authentication with refresh tokens
 
----
+Real-time notifications using SignalR
 
-## Technology Stack
+PDF invoice generation
 
-### Backend
-- **Framework**: ASP.NET Core Web API (.NET 10.0)
-- **Database**: SQL Server with Entity Framework Core
-- **Authentication**: JWT (JSON Web Tokens)
-- **Real-time Communication**: SignalR
-- **PDF Generation**: QuestPDF
-- **Object Mapping**: AutoMapper
-- **Password Hashing**: BCrypt.Net
+Comprehensive CRUD operations for invoices
 
-### Frontend (Designed for)
-- **Framework**: Angular
-- **Port**: http://localhost:4200
+Role-based access control
 
----
+✨ Features
+🔐 Authentication & Authorization
+User registration with email and username validation
 
-## Architecture
+JWT token-based authentication
 
-### Project Structure
+Refresh token mechanism
 
-```
-InvoiceSystem/
-├── Controllers/
-│   ├── AuthController.cs          # Authentication endpoints
-│   ├── InvoicesController.cs      # Invoice CRUD operations
-│   ├── NotificationsController.cs # Notification management
-│   ├── PaymentsController.cs      # Payment tracking
-│   └── StatisticsController.cs    # Analytics and reports
-├── Services/
-│   ├── AuthService.cs             # Authentication logic
-│   └── PdfService.cs              # PDF generation
-├── Hubs/
-│   └── NotificationHub.cs         # SignalR hub for real-time notifications
-├── Data/
-│   └── ApplicationDbContext.cs    # EF Core database context
-├── Models/                        # Database entities
-├── DTOs/                          # Data Transfer Objects
-└── Program.cs                     # Application configuration
-```
+Role-based access control (Admin/User)
 
-### Design Patterns
-- **Repository Pattern**: Via Entity Framework Core DbContext
-- **Dependency Injection**: ASP.NET Core DI container
-- **DTO Pattern**: Separate data transfer objects from entities
-- **Service Layer**: Business logic separated from controllers
+Secure password hashing using BCrypt
 
----
+📊 Invoice Management
+Admin can create, read, update, and delete invoices
 
-## Getting Started
+Users can view assigned invoices
 
-### Prerequisites
+Invoice status tracking (Pending, Paid, Overdue, Cancelled)
 
-- .NET 10.0 SDK or later
-- SQL Server (LocalDB, Express, or Full)
-- Visual Studio 2022 or VS Code
-- Angular CLI (for frontend)
+PDF generation for invoices
 
-### Installation
+Automatic invoice number generation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd InvoiceSystem
-   ```
+🔔 Real-time Notifications
+SignalR-based real-time notifications
 
-2. **Configure Database Connection**
-   
-   Update `appsettings.json`:
-   ```json
-   {
-     "ConnectionStrings": {
-       "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=InvoiceSystemDb;Trusted_Connection=true;MultipleActiveResultSets=true"
-     },
-     "Jwt": {
-       "Key": "hxnqaaHtwP3h2XxAoSQs+A2yxlA5Kgx7rZGvqLbWL/U=",
-       "Issuer": "InvoiceSystemAPI",
-       "Audience": "InvoiceSystemClient"
-     }
-   }
-   ```
+Notifications for new invoice assignments
 
-3. **Apply Database Migrations**
-   ```bash
-   dotnet ef database update
-   ```
+Notification read/unread tracking
 
-4. **Run the Application**
-   ```bash
-   dotnet run
-   ```
+WebSocket communication for instant updates
 
-5. **Access Swagger Documentation**
-   
-   Navigate to: `https://localhost:5001/swagger`
+📁 File Management
+PDF generation for invoices
 
----
+Automatic invoice download
 
-## API Documentation
+Professional invoice formatting
 
-### Base URL
-```
-https://localhost:5001/api
-```
+📁 Project Structure
+text
+INVOICE-SYSTEM-BACKEND/
+├── Controllers/           # API Controllers
+│   ├── AuthController.cs            # Authentication endpoints
+│   ├── InvoicesController.cs        # Invoice CRUD operations
+│   ├── NotificationController.cs    # Notification management
+│   ├── UsersController.cs           # User management
+│   └── WeatherForecastController.cs # Sample endpoint
+├── Data/                 # Data access layer
+│   ├── ApplicationDbContext.cs      # Entity Framework context
+│   └── SeedData.cs                  # Database seeding
+├── DTOs/                 # Data Transfer Objects
+│   ├── InvoiceDto.cs               # Invoice data models
+│   └── UserDto.cs                  # User data models
+├── Helpers/              # Utilities
+│   └── AutoMapperProfile.cs       # Object mapping configuration
+├── Hubs/                 # SignalR Hubs
+│   └── NotificationHub.cs          # Real-time notifications hub
+├── LatoFont/             # Font files for PDF generation
+├── Migrations/           # Database migrations
+├── Models/               # Database entities
+│   ├── Invoice.cs                  # Invoice model
+│   ├── InvoiceItem.cs              # Invoice item model
+│   ├── Notification.cs             # Notification model
+│   └── User.cs                     # User model
+├── Services/             # Business logic services
+│   ├── AuthService.cs              # Authentication logic
+│   └── PdfService.cs               # PDF generation service
+├── appsettings.json      # Configuration
+├── InvoiceSystem.http    # API test file
+├── Program.cs            # Application entry point
+└── README.md             # This file
+🔌 API Documentation
+Base URL
+text
+http://localhost:5000/api
+Authentication Endpoints
+1. Register User
+POST /api/auth/register
 
-All endpoints (except authentication) require a valid JWT token in the Authorization header:
-```
-Authorization: Bearer <your-jwt-token>
-```
+Request Body:
 
----
-
-## 1. Authentication APIs
-
-### 1.1 Register User
-
-**Endpoint**: `POST /api/auth/register`
-
-**Description**: Register a new user account (default role: User)
-
-**Request Body**:
-```json
+json
 {
   "username": "john_doe",
   "email": "john@example.com",
-  "password": "SecurePass123!"
+  "password": "password123",
+  "userType": "User"  // "User" or "Admin"
 }
-```
+Response:
 
-**Response** (200 OK):
-```json
+json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "accessToken": "eyJhbGciOiJIUzI1NiIs...",
+  "refreshToken": "refresh_token_string",
   "username": "john_doe",
-  "role": "User"
+  "role": "User",
+  "accessTokenExpiry": "2024-02-10T12:00:00Z",
+  "refreshTokenExpiry": "2024-02-17T12:00:00Z"
 }
-```
+2. Login
+POST /api/auth/login
 
-**Error Responses**:
-- `400 Bad Request`: Username or email already exists
-- `400 Bad Request`: Invalid input data
+Request Body:
 
----
-
-### 1.2 Login
-
-**Endpoint**: `POST /api/auth/login`
-
-**Description**: Authenticate user and receive JWT token
-
-**Request Body**:
-```json
+json
 {
   "username": "john_doe",
-  "password": "SecurePass123!"
+  "password": "password123",
+  "userType": "User"
 }
-```
+Response: Same as register response
 
-**Response** (200 OK):
-```json
+3. Refresh Token
+POST /api/auth/refresh-token
+
+Request Body:
+
+json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "refreshToken": "refresh_token_string"
 }
-```
+Response:
 
-**Error Responses**:
-- `401 Unauthorized`: Invalid username or password
-
----
-
-### 1.3 Register Admin
-
-**Endpoint**: `POST /api/auth/register-admin`
-
-**Description**: Register a new admin account (role: Admin)
-
-**Request Body**:
-```json
+json
 {
-  "username": "admin_user",
-  "email": "admin@example.com",
-  "password": "AdminPass123!"
+  "accessToken": "new_access_token",
+  "refreshToken": "new_refresh_token",
+  "accessTokenExpiry": "2024-02-10T12:00:00Z",
+  "refreshTokenExpiry": "2024-02-17T12:00:00Z"
 }
-```
+4. Logout
+POST /api/auth/logout
 
-**Response** (200 OK):
-```json
+Request Body:
+
+json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "username": "admin_user",
-  "role": "Admin"
+  "refreshToken": "refresh_token_string"
 }
-```
+Invoice Endpoints
+1. Get All Invoices
+GET /api/invoices
 
----
+Headers:
 
-## 2. Invoice APIs
+text
+Authorization: Bearer <access_token>
+Permissions:
 
-### 2.1 Get All Invoices
+Admin: Gets all invoices
 
-**Endpoint**: `GET /api/invoices`
+User: Gets only assigned invoices
 
-**Description**: 
-- **Admins**: Retrieve all invoices in the system
-- **Users**: Retrieve only invoices assigned to them
+Response:
 
-**Headers**:
-```
-Authorization: Bearer <token>
-```
-
-**Response** (200 OK):
-```json
+json
 [
   {
     "id": 1,
-    "invoiceNumber": "INV-20250209-001",
+    "invoiceNumber": "INV-20240210120000-1234",
     "customerName": "Acme Corporation",
-    "issueDate": "2025-02-09T10:30:00Z",
-    "dueDate": "2025-03-09T10:30:00Z",
-    "totalAmount": 1500.00,
+    "issueDate": "2024-02-10T12:00:00Z",
+    "dueDate": "2024-03-10T12:00:00Z",
+    "totalAmount": 2500.00,
     "status": "Pending",
     "assignedUserId": 2,
     "assignedUserName": "john_doe",
     "items": [
       {
         "id": 1,
-        "description": "Web Development Services",
-        "quantity": 10,
-        "unitPrice": 100.00,
-        "totalPrice": 1000.00
+        "description": "Web Development",
+        "quantity": 40,
+        "unitPrice": 50.00,
+        "totalPrice": 2000.00
       },
       {
         "id": 2,
-        "description": "Hosting Services",
-        "quantity": 5,
-        "unitPrice": 100.00,
+        "description": "Hosting",
+        "quantity": 1,
+        "unitPrice": 500.00,
         "totalPrice": 500.00
       }
     ]
   }
 ]
-```
+2. Get Invoice by ID
+GET /api/invoices/{id}
 
----
+Permissions:
 
-### 2.2 Get Invoice by ID
+Admin: Can access any invoice
 
-**Endpoint**: `GET /api/invoices/{id}`
+User: Can only access assigned invoices
 
-**Description**: Retrieve a specific invoice by ID
+3. Create Invoice (Admin Only)
+POST /api/invoices
 
-**Authorization**:
-- **Admins**: Can view any invoice
-- **Users**: Can only view invoices assigned to them
+Headers:
 
-**Response** (200 OK):
-```json
+text
+Authorization: Bearer <admin_access_token>
+Request Body:
+
+json
 {
-  "id": 1,
-  "invoiceNumber": "INV-20250209-001",
-  "customerName": "Acme Corporation",
-  "issueDate": "2025-02-09T10:30:00Z",
-  "dueDate": "2025-03-09T10:30:00Z",
-  "totalAmount": 1500.00,
-  "status": "Pending",
-  "assignedUserId": 2,
-  "assignedUserName": "john_doe",
-  "items": [...]
-}
-```
-
-**Error Responses**:
-- `404 Not Found`: Invoice doesn't exist
-- `403 Forbidden`: User not authorized to view this invoice
-
----
-
-### 2.3 Create Invoice
-
-**Endpoint**: `POST /api/invoices`
-
-**Description**: Create a new invoice (Admin only)
-
-**Required Role**: Admin
-
-**Request Body**:
-```json
-{
-  "customerName": "Acme Corporation",
-  "dueDate": "2025-03-09T10:30:00Z",
+  "customerName": "New Customer",
+  "dueDate": "2024-03-15T12:00:00Z",
   "assignedUserId": 2,
   "items": [
     {
-      "description": "Web Development Services",
+      "description": "Consulting Services",
       "quantity": 10,
       "unitPrice": 100.00
-    },
-    {
-      "description": "Hosting Services",
-      "quantity": 5,
-      "unitPrice": 100.00
     }
   ]
 }
-```
+Features:
 
-**Response** (201 Created):
-```json
+Automatically generates invoice number
+
+Calculates total amount
+
+Sends real-time notification to assigned user
+
+Creates notification record
+
+4. Update Invoice Status
+PUT /api/invoices/{id}/status
+
+Request Body:
+
+json
 {
-  "id": 1,
-  "invoiceNumber": "INV-20250209-001",
-  "customerName": "Acme Corporation",
-  "issueDate": "2025-02-09T10:30:00Z",
-  "dueDate": "2025-03-09T10:30:00Z",
-  "totalAmount": 1500.00,
-  "status": "Pending",
-  "assignedUserId": 2,
-  "items": [...]
+  "status": "Paid"  // "Pending", "Paid", "Overdue", "Cancelled"
 }
-```
+Permissions:
 
-**Behavior**:
-- Auto-generates invoice number (format: INV-YYYYMMDD-XXX)
-- Automatically calculates total amount
-- Sets initial status to "Pending"
-- Creates a notification for the assigned user
-- Sends real-time notification via SignalR
+Admin: Can update any invoice status
 
-**Error Responses**:
-- `400 Bad Request`: Assigned user not found
-- `401 Unauthorized`: Missing or invalid token
-- `403 Forbidden`: User is not an admin
+User: Can only update assigned invoice status
 
----
+5. Download Invoice PDF
+GET /api/invoices/{id}/download
 
-### 2.4 Update Invoice
+Response: PDF file download
 
-**Endpoint**: `PUT /api/invoices/{id}`
+Notification Endpoints
+1. Get User Notifications
+GET /api/notification
 
-**Description**: Update an existing invoice (Admin only)
+Headers:
 
-**Required Role**: Admin
+text
+Authorization: Bearer <access_token>
+Response:
 
-**Request Body**:
-```json
-{
-  "customerName": "Acme Corporation Updated",
-  "dueDate": "2025-03-15T10:30:00Z",
-  "status": "Paid",
-  "assignedUserId": 2,
-  "items": [
-    {
-      "description": "Web Development Services",
-      "quantity": 15,
-      "unitPrice": 100.00
-    }
-  ]
-}
-```
-
-**Response** (204 No Content)
-
-**Error Responses**:
-- `404 Not Found`: Invoice doesn't exist
-- `400 Bad Request`: Invalid data
-
----
-
-### 2.5 Delete Invoice
-
-**Endpoint**: `DELETE /api/invoices/{id}`
-
-**Description**: Delete an invoice (Admin only)
-
-**Required Role**: Admin
-
-**Response** (204 No Content)
-
-**Error Responses**:
-- `404 Not Found`: Invoice doesn't exist
-
----
-
-### 2.6 Download Invoice PDF
-
-**Endpoint**: `GET /api/invoices/{id}/pdf`
-
-**Description**: Download invoice as PDF
-
-**Authorization**:
-- **Admins**: Can download any invoice
-- **Users**: Can only download invoices assigned to them
-
-**Response**: Binary PDF file
-
-**Headers**:
-```
-Content-Type: application/pdf
-Content-Disposition: attachment; filename=Invoice-INV-20250209-001.pdf
-```
-
-**Error Responses**:
-- `404 Not Found`: Invoice doesn't exist
-- `403 Forbidden`: User not authorized to download this invoice
-
----
-
-## 3. Payment APIs
-
-### 3.1 Get All Payments
-
-**Endpoint**: `GET /api/payments`
-
-**Description**: 
-- **Admins**: Get all payments in the system
-- **Users**: Get only their payments
-
-**Response** (200 OK):
-```json
+json
 [
   {
     "id": 1,
-    "invoiceId": 1,
-    "invoiceNumber": "INV-20250209-001",
-    "amount": 1500.00,
-    "paymentDate": "2025-02-15T14:30:00Z",
-    "paymentMethod": "Bank Transfer",
-    "transactionId": "TXN-123456",
-    "notes": "Payment received via wire transfer"
+    "message": "New invoice #INV-20240210-001 has been assigned to you",
+    "createdAt": "2024-02-10T12:00:00Z",
+    "isRead": false,
+    "userId": 2
   }
 ]
-```
+2. Mark Notification as Read
+PUT /api/notification/{id}/read
 
----
+3. Delete Notification
+DELETE /api/notification/{id}
 
-### 3.2 Record Payment
+User Endpoints
+1. Get All Users (Admin Only)
+GET /api/users
 
-**Endpoint**: `POST /api/payments`
+Headers:
 
-**Description**: Record a payment for an invoice
+text
+Authorization: Bearer <admin_access_token>
+Response:
 
-**Request Body**:
-```json
-{
-  "invoiceId": 1,
-  "amount": 1500.00,
-  "paymentDate": "2025-02-15T14:30:00Z",
-  "paymentMethod": "Bank Transfer",
-  "transactionId": "TXN-123456",
-  "notes": "Payment received via wire transfer"
-}
-```
-
-**Response** (201 Created):
-```json
-{
-  "id": 1,
-  "invoiceId": 1,
-  "amount": 1500.00,
-  "paymentDate": "2025-02-15T14:30:00Z",
-  "paymentMethod": "Bank Transfer",
-  "transactionId": "TXN-123456"
-}
-```
-
-**Behavior**:
-- Automatically updates invoice status to "Paid" if full amount is paid
-- Creates a notification for the admin who created the invoice
-- Sends real-time notification via SignalR
-
-**Error Responses**:
-- `404 Not Found`: Invoice doesn't exist
-- `400 Bad Request`: Payment amount exceeds invoice total
-- `403 Forbidden`: User not authorized to record payment for this invoice
-
----
-
-### 3.3 Get Invoice Payment History
-
-**Endpoint**: `GET /api/payments/invoice/{invoiceId}`
-
-**Description**: Get all payments for a specific invoice
-
-**Response** (200 OK):
-```json
+json
 [
-  {
-    "id": 1,
-    "amount": 750.00,
-    "paymentDate": "2025-02-10T14:30:00Z",
-    "paymentMethod": "Credit Card",
-    "transactionId": "TXN-111111"
-  },
   {
     "id": 2,
-    "amount": 750.00,
-    "paymentDate": "2025-02-15T14:30:00Z",
-    "paymentMethod": "Bank Transfer",
-    "transactionId": "TXN-222222"
-  }
-]
-```
-
----
-
-## 4. Notification APIs
-
-### 4.1 Get User Notifications
-
-**Endpoint**: `GET /api/notifications`
-
-**Description**: Get all notifications for the current user
-
-**Response** (200 OK):
-```json
-[
-  {
-    "id": 1,
-    "message": "New invoice #INV-20250209-001 has been assigned to you.",
-    "createdAt": "2025-02-09T10:30:00Z",
-    "isRead": false
-  },
-  {
-    "id": 2,
-    "message": "Invoice #INV-20250208-005 has been marked as paid.",
-    "createdAt": "2025-02-08T15:45:00Z",
-    "isRead": true
-  }
-]
-```
-
----
-
-### 4.2 Mark Notification as Read
-
-**Endpoint**: `PUT /api/notifications/{id}/read`
-
-**Description**: Mark a specific notification as read
-
-**Response** (204 No Content)
-
-**Error Responses**:
-- `404 Not Found`: Notification doesn't exist
-- `403 Forbidden`: User not authorized to modify this notification
-
----
-
-### 4.3 Mark All Notifications as Read
-
-**Endpoint**: `PUT /api/notifications/mark-all-read`
-
-**Description**: Mark all user's notifications as read
-
-**Response** (204 No Content)
-
----
-
-### 4.4 Get Unread Count
-
-**Endpoint**: `GET /api/notifications/unread-count`
-
-**Description**: Get count of unread notifications
-
-**Response** (200 OK):
-```json
-{
-  "count": 5
-}
-```
-
----
-
-## 5. Statistics APIs (Admin Only)
-
-### 5.1 Get Dashboard Statistics
-
-**Endpoint**: `GET /api/statistics/dashboard`
-
-**Description**: Get overall statistics for admin dashboard
-
-**Required Role**: Admin
-
-**Response** (200 OK):
-```json
-{
-  "totalInvoices": 150,
-  "pendingInvoices": 45,
-  "paidInvoices": 95,
-  "overdueInvoices": 10,
-  "totalRevenue": 125000.00,
-  "pendingRevenue": 35000.00,
-  "collectedRevenue": 90000.00
-}
-```
-
----
-
-### 5.2 Get Revenue by Period
-
-**Endpoint**: `GET /api/statistics/revenue`
-
-**Description**: Get revenue statistics by time period
-
-**Query Parameters**:
-- `startDate` (required): Start date (YYYY-MM-DD)
-- `endDate` (required): End date (YYYY-MM-DD)
-
-**Example**: `GET /api/statistics/revenue?startDate=2025-01-01&endDate=2025-02-09`
-
-**Response** (200 OK):
-```json
-{
-  "period": {
-    "startDate": "2025-01-01",
-    "endDate": "2025-02-09"
-  },
-  "totalRevenue": 45000.00,
-  "invoiceCount": 30,
-  "averageInvoiceAmount": 1500.00,
-  "byStatus": {
-    "paid": 35000.00,
-    "pending": 10000.00,
-    "overdue": 0.00
-  }
-}
-```
-
----
-
-### 5.3 Get User Performance
-
-**Endpoint**: `GET /api/statistics/user-performance`
-
-**Description**: Get performance statistics for all users
-
-**Response** (200 OK):
-```json
-[
-  {
-    "userId": 2,
     "username": "john_doe",
-    "assignedInvoices": 25,
-    "paidInvoices": 20,
-    "pendingInvoices": 5,
-    "totalAmount": 37500.00,
-    "collectedAmount": 30000.00,
-    "paymentRate": 80.0
+    "email": "john@example.com",
+    "role": "User"
   }
 ]
-```
-
----
-
-## Database Schema
-
-### Users Table
-```sql
+🗃️ Database Schema
+Users Table
+sql
 CREATE TABLE Users (
-    Id INT PRIMARY KEY IDENTITY,
-    Username NVARCHAR(50) UNIQUE NOT NULL,
-    Email NVARCHAR(100) UNIQUE NOT NULL,
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Username NVARCHAR(100) UNIQUE NOT NULL,
+    Email NVARCHAR(200) UNIQUE NOT NULL,
     PasswordHash NVARCHAR(MAX) NOT NULL,
-    Role NVARCHAR(20) NOT NULL DEFAULT 'User',
-    CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE()
+    Role NVARCHAR(50) DEFAULT 'User' NOT NULL,
+    RefreshToken NVARCHAR(MAX),
+    RefreshTokenExpiry DATETIME2,
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
 )
-```
-
-### Invoices Table
-```sql
+Invoices Table
+sql
 CREATE TABLE Invoices (
-    Id INT PRIMARY KEY IDENTITY,
-    InvoiceNumber NVARCHAR(50) UNIQUE NOT NULL,
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    InvoiceNumber NVARCHAR(50) NOT NULL,
     CustomerName NVARCHAR(200) NOT NULL,
     IssueDate DATETIME2 NOT NULL,
     DueDate DATETIME2 NOT NULL,
     TotalAmount DECIMAL(18,2) NOT NULL,
-    Status NVARCHAR(20) NOT NULL,
-    AssignedUserId INT NOT NULL,
-    CreatedByAdminId INT NOT NULL,
-    FOREIGN KEY (AssignedUserId) REFERENCES Users(Id),
-    FOREIGN KEY (CreatedByAdminId) REFERENCES Users(Id)
+    Status NVARCHAR(20) DEFAULT 'Pending' NOT NULL,
+    AssignedUserId INT NOT NULL FOREIGN KEY REFERENCES Users(Id),
+    CreatedByAdminId INT NULL FOREIGN KEY REFERENCES Users(Id)
 )
-```
-
-### InvoiceItems Table
-```sql
+InvoiceItems Table
+sql
 CREATE TABLE InvoiceItems (
-    Id INT PRIMARY KEY IDENTITY,
-    InvoiceId INT NOT NULL,
-    Description NVARCHAR(500) NOT NULL,
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Description NVARCHAR(200) NOT NULL,
     Quantity INT NOT NULL,
     UnitPrice DECIMAL(18,2) NOT NULL,
     TotalPrice DECIMAL(18,2) NOT NULL,
-    FOREIGN KEY (InvoiceId) REFERENCES Invoices(Id) ON DELETE CASCADE
+    InvoiceId INT NOT NULL FOREIGN KEY REFERENCES Invoices(Id) ON DELETE CASCADE
 )
-```
-
-### Payments Table
-```sql
-CREATE TABLE Payments (
-    Id INT PRIMARY KEY IDENTITY,
-    InvoiceId INT NOT NULL,
-    Amount DECIMAL(18,2) NOT NULL,
-    PaymentDate DATETIME2 NOT NULL,
-    PaymentMethod NVARCHAR(50),
-    TransactionId NVARCHAR(100),
-    Notes NVARCHAR(MAX),
-    RecordedByUserId INT NOT NULL,
-    FOREIGN KEY (InvoiceId) REFERENCES Invoices(Id),
-    FOREIGN KEY (RecordedByUserId) REFERENCES Users(Id)
-)
-```
-
-### Notifications Table
-```sql
+Notifications Table
+sql
 CREATE TABLE Notifications (
-    Id INT PRIMARY KEY IDENTITY,
-    Message NVARCHAR(MAX) NOT NULL,
-    CreatedAt DATETIME2 NOT NULL,
-    IsRead BIT NOT NULL DEFAULT 0,
-    UserId INT NOT NULL,
-    FOREIGN KEY (UserId) REFERENCES Users(Id)
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Message NVARCHAR(500) NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE(),
+    IsRead BIT DEFAULT 0,
+    UserId INT NOT NULL FOREIGN KEY REFERENCES Users(Id) ON DELETE CASCADE
 )
-```
+🚀 Getting Started
+Prerequisites
+.NET 8.0 SDK or later
 
----
+SQL Server (LocalDB, Express, or Full)
 
-## Authentication & Authorization
+Visual Studio 2022 or VS Code
 
-### JWT Token Structure
+Installation Steps
+Clone the repository
 
-The system uses JWT tokens for authentication. Each token contains:
+bash
+git clone <repository-url>
+cd INVOICE-SYSTEM-BACKEND
+Configure database connection
+Edit appsettings.json:
 
-```json
+json
 {
-  "sub": "2",                    // User ID
-  "unique_name": "john_doe",     // Username
-  "role": "User",                // User role
-  "nbf": 1707475200,             // Not before timestamp
-  "exp": 1707561600,             // Expiration timestamp (24 hours)
-  "iat": 1707475200              // Issued at timestamp
-}
-```
-
-### Token Lifetime
-- **Duration**: 24 hours
-- **Refresh**: Not implemented (user must re-login after expiration)
-
-### Role-Based Permissions
-
-| Action | Admin | User |
-|--------|-------|------|
-| View all invoices | ✅ | ❌ (only assigned) |
-| View specific invoice | ✅ | ✅ (if assigned) |
-| Create invoice | ✅ | ❌ |
-| Update invoice | ✅ | ❌ |
-| Delete invoice | ✅ | ❌ |
-| Download PDF | ✅ | ✅ (if assigned) |
-| Record payment | ✅ | ✅ (if assigned) |
-| View statistics | ✅ | ❌ |
-
----
-
-## Real-time Notifications
-
-The system uses **SignalR** for real-time notifications.
-
-### SignalR Hub Endpoint
-```
-wss://localhost:5001/notificationHub
-```
-
-### Connection (JavaScript Example)
-```javascript
-import * as signalR from "@microsoft/signalr";
-
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl("https://localhost:5001/notificationHub", {
-    accessTokenFactory: () => localStorage.getItem("jwt-token")
-  })
-  .build();
-
-// Start connection
-await connection.start();
-
-// Listen for notifications
-connection.on("ReceiveNotification", (message) => {
-  console.log("New notification:", message);
-  // Update UI with notification
-});
-```
-
-### Events
-
-#### ReceiveNotification
-Triggered when a new notification is created for the user.
-
-**Payload**:
-```json
-{
-  "message": "New invoice #INV-20250209-001 has been assigned to you.",
-  "createdAt": "2025-02-09T10:30:00Z"
-}
-```
-
-**Triggers**:
-- When an admin creates a new invoice (sent to assigned user)
-- When a user records a payment (sent to admin who created the invoice)
-
----
-
-## PDF Generation
-
-The system uses **QuestPDF** to generate professional invoice PDFs.
-
-### PDF Features
-- ✅ Professional layout with header and footer
-- ✅ Company branding area
-- ✅ Invoice details (number, dates, status)
-- ✅ Customer information
-- ✅ Itemized table with quantities and prices
-- ✅ Total amount calculation
-- ✅ Page numbering
-- ✅ Notes section
-
-### Generated PDF Structure
-
-```
-┌─────────────────────────────────────┐
-│            INVOICE                  │
-├─────────────────────────────────────┤
-│ Invoice #: INV-20250209-001         │
-│ Issue Date: 09/02/2025              │
-│ Due Date: 09/03/2025                │
-│ Status: Pending                     │
-│                                     │
-│ Bill To:                            │
-│ Acme Corporation                    │
-├─────────────────────────────────────┤
-│ # │ Description    │ Qty │ Price   │
-├───┼────────────────┼─────┼─────────┤
-│ 1 │ Web Dev        │ 10  │ $100.00 │
-│ 2 │ Hosting        │ 5   │ $100.00 │
-├─────────────────────────────────────┤
-│         Total Amount: $1,500.00     │
-├─────────────────────────────────────┤
-│ Notes:                              │
-│ Thank you for your business!        │
-└─────────────────────────────────────┘
-```
-
----
-
-## Error Handling
-
-### Standard Error Response Format
-
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-  "title": "Bad Request",
-  "status": 400,
-  "errors": {
-    "CustomerName": [
-      "The CustomerName field is required."
-    ]
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=InvoiceSystemDB;User Id=sa;Password=YourPassword;TrustServerCertificate=True;"
+  },
+  "Jwt": {
+    "Key": "YourVeryLongSecretKeyHereAtLeast32Characters",
+    "Issuer": "InvoiceSystem",
+    "Audience": "InvoiceSystemUsers"
   }
 }
-```
+Apply database migrations
 
-### Common HTTP Status Codes
+bash
+dotnet ef database update
+Run the application
 
-| Code | Meaning | When Used |
-|------|---------|-----------|
-| 200 | OK | Successful GET request |
-| 201 | Created | Successful POST (resource created) |
-| 204 | No Content | Successful PUT/DELETE |
-| 400 | Bad Request | Invalid input data |
-| 401 | Unauthorized | Missing or invalid token |
-| 403 | Forbidden | User lacks permission |
-| 404 | Not Found | Resource doesn't exist |
-| 500 | Internal Server Error | Server-side error |
+bash
+dotnet run
+Access the API
 
----
+Swagger UI: https://localhost:5000/swagger
 
-## CORS Configuration
+API Base URL: https://localhost:5000/api
 
-The API is configured to accept requests from the Angular frontend.
+Database Seeding
+The system comes with seeded data:
 
-**Allowed Origin**: `http://localhost:4200`
+Admin User: username: admin, password: admin123
 
-**Allowed Methods**: GET, POST, PUT, DELETE
+Regular Users:
 
-**Allowed Headers**: All
+john_doe / user123
 
-**Credentials**: Enabled (for SignalR)
+jane_smith / user123
 
----
+Sample Invoices: 3 sample invoices with items
 
-## Testing the API
-
-### Using Swagger UI
-
-1. Start the application
-2. Navigate to `https://localhost:5001/swagger`
-3. Use the "Authorize" button to add your JWT token
-4. Test endpoints directly from the browser
-
-### Using Postman
-
-1. **Register/Login** to get a JWT token
-2. Add token to Authorization header:
-   ```
-   Authorization: Bearer <your-token>
-   ```
-3. Make requests to various endpoints
-
-### Example Workflow
-
-```bash
-# 1. Register admin
-POST /api/auth/register-admin
-Body: {"username": "admin", "email": "admin@test.com", "password": "Admin123!"}
-
-# 2. Register user
-POST /api/auth/register
-Body: {"username": "user1", "email": "user1@test.com", "password": "User123!"}
-
-# 3. Login as admin
-POST /api/auth/login
-Body: {"username": "admin", "password": "Admin123!"}
-Response: {"token": "eyJ..."}
-
-# 4. Create invoice (use admin token)
-POST /api/invoices
-Headers: Authorization: Bearer eyJ...
-Body: {
-  "customerName": "Test Company",
-  "dueDate": "2025-03-09",
-  "assignedUserId": 2,
-  "items": [{"description": "Service", "quantity": 1, "unitPrice": 100}]
+🔐 Authentication Details
+JWT Configuration
+json
+{
+  "Jwt": {
+    "Key": "64-character-secret-key-for-signing-jwt-tokens",
+    "Issuer": "InvoiceSystem",
+    "Audience": "InvoiceSystemUsers",
+    "ExpireDays": 7
+  }
 }
+Token Structure
+Access Token: Valid for 1 hour, used for API authorization
 
-# 5. Login as user
-POST /api/auth/login
-Body: {"username": "user1", "password": "User123!"}
+Refresh Token: Valid for 7 days, used to obtain new access tokens
 
-# 6. View assigned invoices (use user token)
-GET /api/invoices
-Headers: Authorization: Bearer eyJ...
+Claims Included: UserId, Username, Email, Role
 
-# 7. Download invoice PDF
-GET /api/invoices/1/pdf
-Headers: Authorization: Bearer eyJ...
-```
+Password Security
+Passwords are hashed using BCrypt with salt
 
----
+Minimum password length: 6 characters
 
-## Security Considerations
+Username and email must be unique
 
-### Implemented Security Features
+🔔 Real-time Notifications
+SignalR Hub Configuration
+Hub Endpoint: /notificationHub
 
-1. **Password Hashing**: Using BCrypt with salt rounds
-2. **JWT Authentication**: Secure token-based authentication
-3. **Role-Based Authorization**: Attribute-based access control
-4. **HTTPS**: Enforced in production
-5. **CORS**: Restricted to specific origin
-6. **Input Validation**: DTOs with data annotations
-7. **SQL Injection Protection**: Entity Framework parameterized queries
+Authentication: Uses JWT tokens
 
-### Recommended Enhancements
+Groups: Supports user-specific and admin group notifications
 
-- [ ] Implement refresh tokens
-- [ ] Add rate limiting
-- [ ] Implement account lockout after failed login attempts
-- [ ] Add email verification for new accounts
-- [ ] Implement password reset functionality
-- [ ] Add audit logging for sensitive operations
-- [ ] Implement two-factor authentication (2FA)
+Notification Flow
+Admin creates invoice → Notification sent to assigned user
 
----
+User updates invoice status → Notification sent to admin
 
-## Future Enhancements
+Real-time updates through WebSocket connection
 
-- [ ] Email notifications for invoice creation and payment
-- [ ] Recurring invoices
-- [ ] Multi-currency support
-- [ ] Invoice templates customization
-- [ ] Bulk operations (create/update multiple invoices)
-- [ ] Export to Excel functionality
-- [ ] Advanced reporting and analytics
-- [ ] Invoice reminders for overdue payments
-- [ ] Client portal for customers to view invoices
-- [ ] Integration with payment gateways
+Client Connection Example (JavaScript)
+javascript
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/notificationHub", {
+        accessTokenFactory: () => localStorage.getItem('accessToken')
+    })
+    .build();
 
----
+connection.on("ReceiveNotification", (message) => {
+    console.log("New notification:", message);
+    // Update UI
+});
 
-## Troubleshooting
+await connection.start();
+🎯 Role-Based Access Control
+Admin Permissions
+Create, read, update, delete all invoices
 
-### Common Issues
+View all users
 
-**Issue**: "Cannot connect to SQL Server"
-- **Solution**: Ensure SQL Server is running and connection string is correct
+Assign invoices to users
 
-**Issue**: "Unauthorized" when accessing endpoints
-- **Solution**: Ensure JWT token is included in Authorization header
+Access all system data
 
-**Issue**: "SignalR connection failed"
-- **Solution**: Check CORS settings and ensure WebSocket support is enabled
+User Permissions
+View assigned invoices only
 
-**Issue**: "PDF generation fails"
-- **Solution**: Ensure QuestPDF license is properly configured
+Update status of assigned invoices
 
----
+Download PDF of assigned invoices
 
-## Contributing
+View personal notifications
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+📄 PDF Generation
+Features
+Professional invoice formatting
 
----
+Automatic calculation of totals
 
-## License
+Company branding support
 
-This project is licensed under the MIT License.
+Itemized listing
 
----
+Download as PDF file
 
-## Support
+Technology
+Uses QuestPDF library
 
-For issues, questions, or contributions, please contact the development team or create an issue in the repository.
+Supports custom fonts (Lato)
 
----
+Generates PDF in memory
 
-## Acknowledgments
+Returns as downloadable file
 
-- **ASP.NET Core Team** - For the excellent framework
-- **QuestPDF** - For the PDF generation library
-- **SignalR** - For real-time communication capabilities
-- **AutoMapper** - For object mapping
-- **BCrypt.Net** - For secure password hashing
+🛠️ Development
+Adding New Features
+Create model in Models/ folder
 
----
+Create DTO in DTOs/ folder
 
-**Version**: 1.0.0  
-**Last Updated**: February 2025  
-**Developed with**: ASP.NET Core 10.0
+Add mapping in AutoMapperProfile.cs
+
+Create service in Services/ folder
+
+Create controller in Controllers/ folder
+
+Add database migration if needed
+
+Testing
+Use the provided InvoiceSystem.http file for API testing
+
+Swagger UI for interactive testing
+
+Postman collection available
+
+Logging
+Comprehensive logging throughout the application
+
+Log levels: Information, Warning, Error
+
+Console and debug output
+
+🚀 Deployment
+Production Considerations
+Update JWT Key: Generate a secure random key
+
+Configure HTTPS: Enable in production
+
+Database Backup: Set up regular backups
+
+Environment Variables: Move sensitive data to environment variables
+
+CORS: Configure for your frontend domain
+
+Docker Support (Future)
+dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["InvoiceSystem.csproj", "."]
+RUN dotnet restore "InvoiceSystem.csproj"
+COPY . .
+RUN dotnet build "InvoiceSystem.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "InvoiceSystem.csproj" -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "InvoiceSystem.dll"]
+📞 Support
+For issues or questions:
+
+Check the API documentation
+
+Review the database seeding for default credentials
+
+Ensure proper JWT configuration
+
+Verify database connection string
+
+📄 License
+This project is for educational and demonstration purposes.
+
+🔄 Version History
+v1.0.0 (February 2024)
+
+Initial release
+
+Complete authentication system
+
+Invoice CRUD operations
+
+Real-time notifications
+
+PDF generation
+
+Role-based access control
+
+Happy Coding! 🚀

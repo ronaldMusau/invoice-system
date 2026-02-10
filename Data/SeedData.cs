@@ -1,75 +1,148 @@
 ﻿using InvoiceSystem.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace InvoiceSystem.Data
 {
     public static class SeedData
     {
-        public static async Task Initialize(IServiceProvider serviceProvider)
+        public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new ApplicationDbContext(
-                serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
-            {
-                // Create database if it doesn't exist
-                context.Database.EnsureCreated();
+            using var context = new ApplicationDbContext(
+                serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>());
 
-                // Check if users already exist
-                if (!context.Users.Any())
+            // Check if we already have data
+            if (context.Users.Any())
+            {
+                return; // Database has been seeded
+            }
+
+            // Create Admin User
+            var admin = new User
+            {
+                Username = "admin",
+                Email = "admin@invoicesystem.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                Role = "Admin",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Users.Add(admin);
+            context.SaveChanges();
+
+            // Create Regular User 1
+            var user1 = new User
+            {
+                Username = "john_doe",
+                Email = "john@example.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("user123"),
+                Role = "User",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Users.Add(user1);
+            context.SaveChanges();
+
+            // Create Regular User 2
+            var user2 = new User
+            {
+                Username = "jane_smith",
+                Email = "jane@example.com",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("user123"),
+                Role = "User",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Users.Add(user2);
+            context.SaveChanges();
+
+            // Create Sample Invoices
+            var invoice1 = new Invoice
+            {
+                InvoiceNumber = "INV-2024-001",
+                CustomerName = "Acme Corporation",
+                IssueDate = DateTime.UtcNow.AddDays(-10),
+                DueDate = DateTime.UtcNow.AddDays(20),
+                Status = "Pending",
+                AssignedUserId = user1.Id,
+                CreatedByAdminId = admin.Id,
+                Items = new List<InvoiceItem>
                 {
-                    // Create password hash manually
-                    var password = "Admin123!";
-                    CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-
-                    // Create sample admin
-                    var admin = new User
+                    new InvoiceItem
                     {
-                        Username = "admin",
-                        Email = "admin@invoicesystem.com",
-                        PasswordHash = passwordHash,
-                        PasswordSalt = passwordSalt,
-                        Role = "Admin"
-                    };
-
-                    context.Users.Add(admin);
-
-                    // Create user1
-                    CreatePasswordHash("User123!", out passwordHash, out passwordSalt);
-                    var user1 = new User
+                        Description = "Web Development Services",
+                        Quantity = 40,
+                        UnitPrice = 50.00m,
+                        TotalPrice = 2000.00m
+                    },
+                    new InvoiceItem
                     {
-                        Username = "user1",
-                        Email = "user1@invoicesystem.com",
-                        PasswordHash = passwordHash,
-                        PasswordSalt = passwordSalt,
-                        Role = "User"
-                    };
-                    context.Users.Add(user1);
-
-                    // Create user2
-                    CreatePasswordHash("User123!", out passwordHash, out passwordSalt);
-                    var user2 = new User
-                    {
-                        Username = "user2",
-                        Email = "user2@invoicesystem.com",
-                        PasswordHash = passwordHash,
-                        PasswordSalt = passwordSalt,
-                        Role = "User"
-                    };
-                    context.Users.Add(user2);
-
-                    await context.SaveChangesAsync();
+                        Description = "Hosting Services (Annual)",
+                        Quantity = 1,
+                        UnitPrice = 500.00m,
+                        TotalPrice = 500.00m
+                    }
                 }
-            }
-        }
+            };
+            invoice1.TotalAmount = invoice1.Items.Sum(i => i.TotalPrice);
 
-        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512())
+            var invoice2 = new Invoice
             {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
+                InvoiceNumber = "INV-2024-002",
+                CustomerName = "Tech Solutions Inc.",
+                IssueDate = DateTime.UtcNow.AddDays(-5),
+                DueDate = DateTime.UtcNow.AddDays(25),
+                Status = "Pending",
+                AssignedUserId = user2.Id,
+                CreatedByAdminId = admin.Id,
+                Items = new List<InvoiceItem>
+                {
+                    new InvoiceItem
+                    {
+                        Description = "Software Consultation",
+                        Quantity = 10,
+                        UnitPrice = 100.00m,
+                        TotalPrice = 1000.00m
+                    }
+                }
+            };
+            invoice2.TotalAmount = invoice2.Items.Sum(i => i.TotalPrice);
+
+            var invoice3 = new Invoice
+            {
+                InvoiceNumber = "INV-2024-003",
+                CustomerName = "Global Enterprises",
+                IssueDate = DateTime.UtcNow.AddDays(-15),
+                DueDate = DateTime.UtcNow.AddDays(-5),
+                Status = "Overdue",
+                AssignedUserId = user1.Id,
+                CreatedByAdminId = admin.Id,
+                Items = new List<InvoiceItem>
+                {
+                    new InvoiceItem
+                    {
+                        Description = "Mobile App Development",
+                        Quantity = 80,
+                        UnitPrice = 75.00m,
+                        TotalPrice = 6000.00m
+                    },
+                    new InvoiceItem
+                    {
+                        Description = "UI/UX Design",
+                        Quantity = 20,
+                        UnitPrice = 60.00m,
+                        TotalPrice = 1200.00m
+                    }
+                }
+            };
+            invoice3.TotalAmount = invoice3.Items.Sum(i => i.TotalPrice);
+
+            context.Invoices.AddRange(invoice1, invoice2, invoice3);
+            context.SaveChanges();
+
+            Console.WriteLine("Database seeded successfully!");
+            Console.WriteLine($"Admin credentials - Username: admin, Password: admin123");
+            Console.WriteLine($"User credentials - Username: john_doe, Password: user123");
+            Console.WriteLine($"User credentials - Username: jane_smith, Password: user123");
         }
     }
 }

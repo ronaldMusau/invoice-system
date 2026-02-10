@@ -19,30 +19,48 @@ namespace InvoiceSystem.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure relationships
-            modelBuilder.Entity<Invoice>()
-                .HasOne(i => i.AssignedUser)
-                .WithMany(u => u.Invoices)
-                .HasForeignKey(i => i.AssignedUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // User configuration
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Username).IsUnique();
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.PasswordHash).IsRequired();
+                entity.Property(e => e.Role).IsRequired().HasMaxLength(50).HasDefaultValue("User");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            });
 
-            modelBuilder.Entity<Invoice>()
-                .HasOne(i => i.CreatedByAdmin)
-                .WithMany()
-                .HasForeignKey(i => i.CreatedByAdminId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Invoice configuration
+            modelBuilder.Entity<Invoice>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.AssignedUser)
+                    .WithMany(u => u.AssignedInvoices)
+                    .HasForeignKey(e => e.AssignedUserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
 
-            modelBuilder.Entity<InvoiceItem>()
-                .HasOne(ii => ii.Invoice)
-                .WithMany(i => i.Items)
-                .HasForeignKey(ii => ii.InvoiceId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // InvoiceItem configuration
+            modelBuilder.Entity<InvoiceItem>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Invoice)
+                    .WithMany(i => i.Items)
+                    .HasForeignKey(e => e.InvoiceId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
-            modelBuilder.Entity<Notification>()
-                .HasOne(n => n.User)
-                .WithMany()
-                .HasForeignKey(n => n.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Notification configuration
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.User)
+                    .WithMany(u => u.Notifications)
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

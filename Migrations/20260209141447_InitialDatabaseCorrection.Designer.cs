@@ -4,6 +4,7 @@ using InvoiceSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvoiceSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260209141447_InitialDatabaseCorrection")]
+    partial class InitialDatabaseCorrection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace InvoiceSystem.Migrations
                     b.Property<int>("AssignedUserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CreatedByAdminId")
+                    b.Property<int>("CreatedByAdminId")
                         .HasColumnType("int");
 
                     b.Property<string>("CustomerName")
@@ -194,7 +197,9 @@ namespace InvoiceSystem.Migrations
 
                     b.HasOne("InvoiceSystem.Models.User", "CreatedByAdmin")
                         .WithMany()
-                        .HasForeignKey("CreatedByAdminId");
+                        .HasForeignKey("CreatedByAdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AssignedUser");
 

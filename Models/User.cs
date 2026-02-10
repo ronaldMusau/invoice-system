@@ -4,7 +4,6 @@ namespace InvoiceSystem.Models
 {
     public class User
     {
-        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -12,20 +11,25 @@ namespace InvoiceSystem.Models
         public string Username { get; set; } = string.Empty;
 
         [Required]
+        [EmailAddress]
         [MaxLength(200)]
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        public byte[] PasswordHash { get; set; } = new byte[32];
+        public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
-        public byte[] PasswordSalt { get; set; } = new byte[32];
+        [MaxLength(50)]
+        public string Role { get; set; } = "User"; // User, Admin
 
-        [Required]
-        [MaxLength(20)]
-        public string Role { get; set; } = "User"; // "User" or "Admin"
+        public string? RefreshToken { get; set; }
 
-        // Navigation property for invoices assigned to this user
-        public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public DateTime? RefreshTokenExpiry { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation properties
+        public ICollection<Invoice> AssignedInvoices { get; set; } = new List<Invoice>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 }

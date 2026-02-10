@@ -13,65 +13,226 @@ namespace InvoiceSystem.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(ApplicationDbContext context, IConfiguration configuration)
+        public AuthService(
+            ApplicationDbContext context,
+            IConfiguration configuration,
+            ILogger<AuthService> logger)
         {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
         }
 
-        // Register new user
         public async Task<User> Register(string username, string email, string password, string role = "User")
         {
-            // Check if user exists
-            if (await _context.Users.AnyAsync(u => u.Username == username))
-                throw new Exception("Username already exists");
-
-            if (await _context.Users.AnyAsync(u => u.Email == email))
-                throw new Exception("Email already exists");
-
-            // Create password hash
-            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            var user = new User
+            try
             {
-                Username = username,
-                Email = email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Role = role
-            };
+                // Validate role
+                if (role != "User" && role != "Admin")
+                {
+                    throw new Exception("Invalid role. Must be either 'User' or 'Admin'");
+                }
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+                // Trim inputs
+                username = username?.Trim() ?? string.Empty;
+                email = email?.Trim() ?? string.Empty;
 
-            return user;
+                // Validate inputs
+                if (string.IsNullOrWhiteSpace(username))
+                {
+                    throw new Exception("Username is required");
+                }
+
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    throw new Exception("Email is required");
+                }
+
+                if (string.IsNullOrWhiteSpace(password))
+                {
+                    throw new Exception("Password is required");
+                }
+
+                _logger.LogInformation($"Checking if username '{username}' already exists...");
+
+                // Check if user exists (case-insensitive)
+                if (await _context.Users.AnyAsync(u => u.Username.ToLower() == username.ToLower()))
+                {
+                    _logger.LogWarning($"Username '{username}' already exists");
+                    throw new Exception("Username already exists");
+                }
+
+                _logger.LogInformation($"Checking if email '{email}' already exists...");
+
+                if (await _context.Users.AnyAsync(u => u.Email.ToLower() == email.ToLower()))
+                {
+                    _logger.LogWarning($"Email '{email}' already exists");
+                    throw new Exception("Email already exists");
+                }
+
+                // Create password hash
+                _logger.LogInformation($"Creating password hash for user '{username}'");
+                var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+
+                var user = new User
+                {
+                    Username = username,
+                    Email = email,
+                    PasswordHash = passwordHash,
+                    Role = role,
+                    CreatedAt = DateTime.UtcNow,
+                    RefreshToken = null,
+                    RefreshTokenExpiry = null
+                };
+
+                _context.Users.Add(user);
+
+                try
+                {
+                    _logger.LogInformation($"Saving user '{username}' to database...");
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation($"User '{username}' registered successfully with ID {user.Id} and role '{role}'");
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, $"Database error while registering user '{username}'");
+
+                    // Log inner exception details
+                    var innerException = ex.InnerException;
+                    while (innerException != null)
+                    {
+                        _logger.LogError($"Inner exception: {innerException.Message}");
+                        innerException = innerException.InnerException;
+                    }
+
+                    throw new Exception($"Failed to register user. Database error: {ex.InnerException?.Message ?? ex.Message}");
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error during registration for username: {username}");
+                throw;
+            }
         }
 
-        // Login user
-        public async Task<string> Login(string username, string password)
+        public async Task<(string accessToken, string refreshToken, User user)> Login(string username, string password, string userType)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            _logger.LogInformation($"Login attempt for username: '{username}', userType: '{userType}'");
+
+            // Find user by username (case-insensitive)
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
 
             if (user == null)
-                throw new Exception("User not found");
+            {
+                _logger.LogWarning($"User not found: '{username}'");
+                throw new Exception("Invalid username or password");
+            }
 
-            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                throw new Exception("Wrong password");
+            _logger.LogInformation($"User found: ID={user.Id}, Username='{user.Username}', Role='{user.Role}'");
 
-            return CreateToken(user);
+            // Verify password
+            _logger.LogInformation("Verifying password...");
+            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            {
+                _logger.LogWarning($"Invalid password for user '{username}'");
+                throw new Exception("Invalid username or password");
+            }
+
+            _logger.LogInformation("Password verified successfully");
+
+            // Verify user type matches role
+            if (user.Role != userType)
+            {
+                _logger.LogWarning($"Role mismatch for user '{username}'. Expected: '{userType}', Actual: '{user.Role}'");
+                throw new Exception($"User is not registered as {userType}. This account is registered as {user.Role}");
+            }
+
+            _logger.LogInformation($"Role verification passed. User role: '{user.Role}' matches requested type: '{userType}'");
+
+            // Generate tokens
+            _logger.LogInformation("Generating access token...");
+            var accessToken = GenerateAccessToken(user);
+
+            _logger.LogInformation("Generating refresh token...");
+            var refreshToken = GenerateRefreshToken();
+
+            // Store refresh token
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Login successful for user '{username}' with role '{user.Role}'");
+
+            return (accessToken, refreshToken, user);
         }
 
-        // Create JWT token
-        private string CreateToken(User user)
+        public async Task<(string accessToken, string refreshToken)> RefreshToken(string refreshToken)
         {
+            _logger.LogInformation("Attempting to refresh token");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null)
+            {
+                _logger.LogWarning("Refresh token not found in database");
+                throw new Exception("Invalid refresh token");
+            }
+
+            if (user.RefreshTokenExpiry <= DateTime.UtcNow)
+            {
+                _logger.LogWarning($"Refresh token expired for user '{user.Username}'");
+                throw new Exception("Refresh token has expired");
+            }
+
+            // Generate new tokens
+            var newAccessToken = GenerateAccessToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            // Update refresh token
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Token refreshed successfully for user '{user.Username}'");
+
+            return (newAccessToken, newRefreshToken);
+        }
+
+        public async Task<bool> RevokeToken(string refreshToken)
+        {
+            _logger.LogInformation("Attempting to revoke token");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null)
+            {
+                _logger.LogWarning("Refresh token not found for revocation");
+                return false;
+            }
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiry = null;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"Token revoked successfully for user '{user.Username}'");
+
+            return true;
+        }
+
+        private string GenerateAccessToken(User user)
+        {
+            _logger.LogInformation($"Generating JWT access token for user '{user.Username}'");
+
             var jwtSettings = _configuration.GetSection("Jwt");
-            var keyString = jwtSettings["Key"] ?? "hxnqaaHtwP3h2XxAoSQs+A2yxlA5Kgx7rZGvqLbWL/U=";
+            var keyString = jwtSettings["Key"] ?? throw new Exception("JWT Key not configured");
+            var key = Encoding.UTF8.GetBytes(keyString);
 
-            // Create symmetric security key
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-
-            var claims = new List<Claim>
+            var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
@@ -79,38 +240,35 @@ namespace InvoiceSystem.Services
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-            // Use HmacSha256 (most common)
-            var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            _logger.LogInformation($"JWT Claims - ID: {user.Id}, Username: {user.Username}, Email: {user.Email}, Role: {user.Role}");
 
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddDays(Convert.ToDouble(jwtSettings["ExpireDays"] ?? "7")),
-                signingCredentials: creds
-            );
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(1), // Access token expires in 1 hour
+                Issuer = jwtSettings["Issuer"],
+                Audience = jwtSettings["Audience"],
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                )
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            _logger.LogInformation($"Access token generated successfully. Expires: {tokenDescriptor.Expires}");
+
+            return tokenString;
         }
 
-        // Create password hash
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        private string GenerateRefreshToken()
         {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            }
-        }
-
-        // Verify password hash
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
-            }
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

@@ -189,3 +189,5 @@ C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\De
 C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\InvoiceSystem.genruntimeconfig.cache
 C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\ref\InvoiceSystem.dll
 C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\InvoiceSystem.sourcelink.json
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\musau\OneDrive\Desktop\trial\invoice\InvoiceSystem\InvoiceSystem\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -17,6 +17,38 @@
   },
   {
     "ContainingType": "InvoiceSystem.Controllers.AuthController",
+    "Method": "Logout",
+    "RelativePath": "api/Auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "InvoiceSystem.DTOs.RefreshTokenDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InvoiceSystem.Controllers.AuthController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/Auth/refresh-token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "InvoiceSystem.DTOs.RefreshTokenDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InvoiceSystem.Controllers.AuthController",
     "Method": "Register",
     "RelativePath": "api/Auth/register",
     "HttpMethod": "POST",
@@ -33,15 +65,15 @@
   },
   {
     "ContainingType": "InvoiceSystem.Controllers.AuthController",
-    "Method": "RegisterAdmin",
-    "RelativePath": "api/Auth/register-admin",
+    "Method": "RevokeToken",
+    "RelativePath": "api/Auth/revoke-token",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "request",
-        "Type": "InvoiceSystem.DTOs.UserRegisterDto",
+        "Type": "InvoiceSystem.DTOs.RefreshTokenDto",
         "IsRequired": true
       }
     ],
@@ -121,23 +153,7 @@
   },
   {
     "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
-    "Method": "AcceptInvoice",
-    "RelativePath": "api/Invoices/{id}/accept",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
-    "Method": "DownloadInvoicePdf",
+    "Method": "DownloadInvoice",
     "RelativePath": "api/Invoices/{id}/download",
     "HttpMethod": "GET",
     "IsController": true,
@@ -153,8 +169,8 @@
   },
   {
     "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
-    "Method": "RejectInvoice",
-    "RelativePath": "api/Invoices/{id}/reject",
+    "Method": "UpdateInvoiceStatus",
+    "RelativePath": "api/Invoices/{id}/status",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -165,17 +181,17 @@
         "IsRequired": true
       },
       {
-        "Name": "reason",
-        "Type": "System.String",
+        "Name": "updateStatusDto",
+        "Type": "InvoiceSystem.DTOs.UpdateInvoiceStatusDto",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
+    "ContainingType": "InvoiceSystem.Controllers.NotificationController",
     "Method": "GetNotifications",
-    "RelativePath": "api/Invoices/notifications",
+    "RelativePath": "api/Notification",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -193,9 +209,9 @@
     ]
   },
   {
-    "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
+    "ContainingType": "InvoiceSystem.Controllers.NotificationController",
     "Method": "DeleteNotification",
-    "RelativePath": "api/Invoices/notifications/{id}",
+    "RelativePath": "api/Notification/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -209,9 +225,9 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
-    "Method": "MarkNotificationAsRead",
-    "RelativePath": "api/Invoices/notifications/{id}/read",
+    "ContainingType": "InvoiceSystem.Controllers.NotificationController",
+    "Method": "MarkAsRead",
+    "RelativePath": "api/Notification/{id}/read",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -225,16 +241,16 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "InvoiceSystem.Controllers.InvoicesController",
-    "Method": "GetUsersForDropdown",
-    "RelativePath": "api/Invoices/users",
+    "ContainingType": "InvoiceSystem.Controllers.UsersController",
+    "Method": "GetUsers",
+    "RelativePath": "api/Users",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[System.Object, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[InvoiceSystem.DTOs.UserDto, InvoiceSystem, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

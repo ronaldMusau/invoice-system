@@ -35,15 +35,15 @@ namespace InvoiceSystem.Models
         // Foreign key to assigned user
         public int AssignedUserId { get; set; }
 
-        // Foreign key to creator (admin)
-        public int CreatedByAdminId { get; set; }
+        // Foreign key to creator (admin) - MADE NULLABLE
+        public int? CreatedByAdminId { get; set; }
 
         // Navigation properties
         [ForeignKey("AssignedUserId")]
         public User AssignedUser { get; set; } = null!;
 
         [ForeignKey("CreatedByAdminId")]
-        public User CreatedByAdmin { get; set; } = null!;
+        public User? CreatedByAdmin { get; set; }
 
         // Invoice items (one-to-many)
         public ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
