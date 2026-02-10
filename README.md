@@ -1,132 +1,157 @@
-﻿Invoice Management System Backend
+
+# Invoice Management System Backend
+
 A comprehensive invoice management system backend built with ASP.NET Core Web API, featuring JWT authentication, role-based access control, real-time notifications, and PDF generation.
 
-📋 Table of Contents
-Overview
+## 📋 Table of Contents
 
-Features
+- [Overview](#-overview)
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [API Documentation](#-api-documentation)
+- [Database Schema](#-database-schema)
+- [Getting Started](#-getting-started)
+- [Authentication](#-authentication-details)
+- [Real-time Notifications](#-real-time-notifications)
+- [Role-Based Access Control](#-role-based-access-control)
+- [PDF Generation](#-pdf-generation)
+- [Development](#-development)
+- [Deployment](#-deployment)
+- [Support](#-support)
+- [License](#-license)
+- [Version History](#-version-history)
 
-Project Structure
+---
 
-API Documentation
+## 📖 Overview
 
-Database Schema
-
-Getting Started
-
-Authentication
-
-Real-time Notifications
-
-Deployment
-
-📖 Overview
 This is a robust backend system for managing invoices with support for:
 
-Multi-role system (Admin and User)
+- Multi-role system (Admin and User)
+- JWT-based authentication with refresh tokens
+- Real-time notifications using SignalR
+- PDF invoice generation
+- Comprehensive CRUD operations for invoices
+- Role-based access control
 
-JWT-based authentication with refresh tokens
+---
 
-Real-time notifications using SignalR
+## ✨ Features
 
-PDF invoice generation
+### 🔐 Authentication & Authorization
 
-Comprehensive CRUD operations for invoices
+- User registration with email and username validation  
+- JWT token-based authentication  
+- Refresh token mechanism  
+- Role-based access control (Admin/User)  
+- Secure password hashing using BCrypt  
 
-Role-based access control
+### 📊 Invoice Management
 
-✨ Features
-🔐 Authentication & Authorization
-User registration with email and username validation
+- Admin can create, read, update, and delete invoices  
+- Users can view assigned invoices  
+- Invoice status tracking (Pending, Paid, Overdue, Cancelled)  
+- PDF generation for invoices  
+- Automatic invoice number generation  
 
-JWT token-based authentication
+### 🔔 Real-time Notifications
 
-Refresh token mechanism
+- SignalR-based real-time notifications  
+- Notifications for new invoice assignments  
+- Notification read/unread tracking  
+- WebSocket communication for instant updates  
 
-Role-based access control (Admin/User)
+### 📁 File Management
 
-Secure password hashing using BCrypt
+- PDF generation for invoices  
+- Automatic invoice download  
+- Professional invoice formatting  
 
-📊 Invoice Management
-Admin can create, read, update, and delete invoices
+---
 
-Users can view assigned invoices
+## 📁 Project Structure
 
-Invoice status tracking (Pending, Paid, Overdue, Cancelled)
-
-PDF generation for invoices
-
-Automatic invoice number generation
-
-🔔 Real-time Notifications
-SignalR-based real-time notifications
-
-Notifications for new invoice assignments
-
-Notification read/unread tracking
-
-WebSocket communication for instant updates
-
-📁 File Management
-PDF generation for invoices
-
-Automatic invoice download
-
-Professional invoice formatting
-
-📁 Project Structure
-text
+```text
 INVOICE-SYSTEM-BACKEND/
-├── Controllers/           # API Controllers
-│   ├── AuthController.cs            # Authentication endpoints
-│   ├── InvoicesController.cs        # Invoice CRUD operations
-│   ├── NotificationController.cs    # Notification management
-│   ├── UsersController.cs           # User management
-│   └── WeatherForecastController.cs # Sample endpoint
-├── Data/                 # Data access layer
-│   ├── ApplicationDbContext.cs      # Entity Framework context
-│   └── SeedData.cs                  # Database seeding
-├── DTOs/                 # Data Transfer Objects
-│   ├── InvoiceDto.cs               # Invoice data models
-│   └── UserDto.cs                  # User data models
-├── Helpers/              # Utilities
-│   └── AutoMapperProfile.cs       # Object mapping configuration
-├── Hubs/                 # SignalR Hubs
-│   └── NotificationHub.cs          # Real-time notifications hub
-├── LatoFont/             # Font files for PDF generation
-├── Migrations/           # Database migrations
-├── Models/               # Database entities
-│   ├── Invoice.cs                  # Invoice model
-│   ├── InvoiceItem.cs              # Invoice item model
-│   ├── Notification.cs             # Notification model
-│   └── User.cs                     # User model
-├── Services/             # Business logic services
-│   ├── AuthService.cs              # Authentication logic
-│   └── PdfService.cs               # PDF generation service
-├── appsettings.json      # Configuration
-├── InvoiceSystem.http    # API test file
-├── Program.cs            # Application entry point
-└── README.md             # This file
-🔌 API Documentation
-Base URL
-text
+│
+├── Controllers
+│   ├── AuthController.cs
+│   ├── InvoicesController.cs
+│   ├── NotificationController.cs
+│   ├── UsersController.cs
+│   └── WeatherForecastController.cs
+│
+├── Data
+│   ├── ApplicationDbContext.cs
+│   └── SeedData.cs
+│
+├── DTOs
+│   ├── InvoiceDto.cs
+│   └── UserDto.cs
+│
+├── Helpers
+│   └── AutoMapperProfile.cs
+│
+├── Hubs
+│   └── NotificationHub.cs
+│
+├── LatoFont
+│
+├── Migrations
+│   ├── 20260204085321_InitialCreate.cs
+│   ├── 20260204182405_UpdateInvoiceRelationships.cs
+│   ├── 20260209141447_InitialDatabaseCorrection.cs
+│   ├── 20260209141736_MakeCreatedByAdminIdNull.cs
+│   └── ApplicationDbContextModelSnapshot.cs
+│
+├── Models
+│   ├── Invoice.cs
+│   ├── InvoiceItem.cs
+│   ├── Notification.cs
+│   └── User.cs
+│
+├── obj
+│
+├── Services
+│   ├── AuthService.cs
+│   └── PdfService.cs
+│
+├── appsettings.json
+├── InvoiceSystem.http
+├── Program.cs
+└── README.md
+```
+
+---
+
+## 🔌 API Documentation
+
+### Base URL
+
+```text
 http://localhost:5000/api
-Authentication Endpoints
-1. Register User
-POST /api/auth/register
+```
 
-Request Body:
+---
 
-json
+### Authentication Endpoints
+
+#### 1. Register User
+
+**POST** `/api/auth/register`
+
+**Request Body:**
+```json
 {
   "username": "john_doe",
   "email": "john@example.com",
   "password": "password123",
-  "userType": "User"  // "User" or "Admin"
+  "userType": "User"
 }
-Response:
+```
 
-json
+**Response:**
+```json
 {
   "accessToken": "eyJhbGciOiJIUzI1NiIs...",
   "refreshToken": "refresh_token_string",
@@ -135,63 +160,112 @@ json
   "accessTokenExpiry": "2024-02-10T12:00:00Z",
   "refreshTokenExpiry": "2024-02-17T12:00:00Z"
 }
-2. Login
-POST /api/auth/login
+```
 
-Request Body:
+---
 
-json
+#### 2. Login
+
+**POST** `/api/auth/login`
+
+**Request Body:**
+```json
 {
   "username": "john_doe",
   "password": "password123",
   "userType": "User"
 }
-Response: Same as register response
+```
 
-3. Refresh Token
-POST /api/auth/refresh-token
+**Response:** Same as register response
 
-Request Body:
+---
 
-json
+#### 3. Refresh Token
+
+**POST** `/api/auth/refresh-token`
+
+**Request Body:**
+```json
 {
   "refreshToken": "refresh_token_string"
 }
-Response:
+```
 
-json
+**Response:**
+```json
 {
   "accessToken": "new_access_token",
   "refreshToken": "new_refresh_token",
   "accessTokenExpiry": "2024-02-10T12:00:00Z",
   "refreshTokenExpiry": "2024-02-17T12:00:00Z"
 }
-4. Logout
-POST /api/auth/logout
+```
 
-Request Body:
+---
 
-json
+#### 4. Logout
+
+**POST** `/api/auth/logout`
+
+**Request Body:**
+```json
 {
   "refreshToken": "refresh_token_string"
 }
-Invoice Endpoints
-1. Get All Invoices
-GET /api/invoices
+```
 
-Headers:
+**Response:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
 
-text
+---
+
+#### 5. Revoke Token
+
+**POST** `/api/auth/revoke-token`
+
+**Headers:**
+```text
 Authorization: Bearer <access_token>
-Permissions:
+```
 
-Admin: Gets all invoices
+**Request Body:**
+```json
+{
+  "refreshToken": "refresh_token_string"
+}
+```
 
-User: Gets only assigned invoices
+**Response:**
+```json
+{
+  "message": "Token revoked successfully"
+}
+```
 
-Response:
+---
 
-json
+### Invoice Endpoints
+
+#### 1. Get All Invoices
+
+**GET** `/api/invoices`
+
+**Headers:**
+```text
+Authorization: Bearer <access_token>
+```
+
+**Permissions:**
+- Admin: Gets all invoices  
+- User: Gets only assigned invoices  
+
+**Response:**
+```json
 [
   {
     "id": 1,
@@ -221,25 +295,31 @@ json
     ]
   }
 ]
-2. Get Invoice by ID
-GET /api/invoices/{id}
+```
 
-Permissions:
+---
 
-Admin: Can access any invoice
+#### 2. Get Invoice by ID
 
-User: Can only access assigned invoices
+**GET** `/api/invoices/{id}`
 
-3. Create Invoice (Admin Only)
-POST /api/invoices
+**Permissions:**
+- Admin: Can access any invoice  
+- User: Can only access assigned invoices  
 
-Headers:
+---
 
-text
+#### 3. Create Invoice (Admin Only)
+
+**POST** `/api/invoices`
+
+**Headers:**
+```text
 Authorization: Bearer <admin_access_token>
-Request Body:
+```
 
-json
+**Request Body:**
+```json
 {
   "customerName": "New Customer",
   "dueDate": "2024-03-15T12:00:00Z",
@@ -252,47 +332,54 @@ json
     }
   ]
 }
-Features:
+```
 
-Automatically generates invoice number
+**Features:**
+- Automatically generates invoice number  
+- Calculates total amount  
+- Sends real-time notification to assigned user  
+- Creates notification record  
 
-Calculates total amount
+---
 
-Sends real-time notification to assigned user
+#### 4. Update Invoice Status
 
-Creates notification record
+**PUT** `/api/invoices/{id}/status`
 
-4. Update Invoice Status
-PUT /api/invoices/{id}/status
-
-Request Body:
-
-json
+**Request Body:**
+```json
 {
-  "status": "Paid"  // "Pending", "Paid", "Overdue", "Cancelled"
+  "status": "Paid"
 }
-Permissions:
+```
 
-Admin: Can update any invoice status
+**Permissions:**
+- Admin: Can update any invoice status  
+- User: Can only update assigned invoice status  
 
-User: Can only update assigned invoice status
+---
 
-5. Download Invoice PDF
-GET /api/invoices/{id}/download
+#### 5. Download Invoice PDF
 
-Response: PDF file download
+**GET** `/api/invoices/{id}/download`
 
-Notification Endpoints
-1. Get User Notifications
-GET /api/notification
+**Response:** PDF file download
 
-Headers:
+---
 
-text
+### Notification Endpoints
+
+#### 1. Get User Notifications
+
+**GET** `/api/notification`
+
+**Headers:**
+```text
 Authorization: Bearer <access_token>
-Response:
+```
 
-json
+**Response:**
+```json
 [
   {
     "id": 1,
@@ -302,23 +389,35 @@ json
     "userId": 2
   }
 ]
-2. Mark Notification as Read
-PUT /api/notification/{id}/read
+```
 
-3. Delete Notification
-DELETE /api/notification/{id}
+---
 
-User Endpoints
-1. Get All Users (Admin Only)
-GET /api/users
+#### 2. Mark Notification as Read
 
-Headers:
+**PUT** `/api/notification/{id}/read`
 
-text
+---
+
+#### 3. Delete Notification
+
+**DELETE** `/api/notification/{id}`
+
+---
+
+### User Endpoints
+
+#### 1. Get All Users (Admin Only)
+
+**GET** `/api/users`
+
+**Headers:**
+```text
 Authorization: Bearer <admin_access_token>
-Response:
+```
 
-json
+**Response:**
+```json
 [
   {
     "id": 2,
@@ -327,9 +426,15 @@ json
     "role": "User"
   }
 ]
-🗃️ Database Schema
-Users Table
-sql
+```
+
+---
+
+## 🗃️ Database Schema
+
+### Users Table
+
+```sql
 CREATE TABLE Users (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Username NVARCHAR(100) UNIQUE NOT NULL,
@@ -340,8 +445,13 @@ CREATE TABLE Users (
     RefreshTokenExpiry DATETIME2,
     CreatedAt DATETIME2 DEFAULT GETUTCDATE()
 )
-Invoices Table
-sql
+```
+
+---
+
+### Invoices Table
+
+```sql
 CREATE TABLE Invoices (
     Id INT PRIMARY KEY IDENTITY(1,1),
     InvoiceNumber NVARCHAR(50) NOT NULL,
@@ -353,8 +463,13 @@ CREATE TABLE Invoices (
     AssignedUserId INT NOT NULL FOREIGN KEY REFERENCES Users(Id),
     CreatedByAdminId INT NULL FOREIGN KEY REFERENCES Users(Id)
 )
-InvoiceItems Table
-sql
+```
+
+---
+
+### InvoiceItems Table
+
+```sql
 CREATE TABLE InvoiceItems (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Description NVARCHAR(200) NOT NULL,
@@ -363,8 +478,13 @@ CREATE TABLE InvoiceItems (
     TotalPrice DECIMAL(18,2) NOT NULL,
     InvoiceId INT NOT NULL FOREIGN KEY REFERENCES Invoices(Id) ON DELETE CASCADE
 )
-Notifications Table
-sql
+```
+
+---
+
+### Notifications Table
+
+```sql
 CREATE TABLE Notifications (
     Id INT PRIMARY KEY IDENTITY(1,1),
     Message NVARCHAR(500) NOT NULL,
@@ -372,64 +492,82 @@ CREATE TABLE Notifications (
     IsRead BIT DEFAULT 0,
     UserId INT NOT NULL FOREIGN KEY REFERENCES Users(Id) ON DELETE CASCADE
 )
-🚀 Getting Started
-Prerequisites
-.NET 8.0 SDK or later
+```
 
-SQL Server (LocalDB, Express, or Full)
+---
 
-Visual Studio 2022 or VS Code
+## 🚀 Getting Started
 
-Installation Steps
-Clone the repository
+### Prerequisites
 
-bash
+- .NET 8.0 SDK or later  
+- SQL Server (LocalDB, Express, or Full)  
+- Visual Studio 2022 or VS Code  
+
+---
+
+### Installation Steps
+
+1. Clone the repository:
+
+```bash
 git clone <repository-url>
 cd INVOICE-SYSTEM-BACKEND
-Configure database connection
-Edit appsettings.json:
+```
 
-json
+2. Configure database connection  
+Edit `appsettings.json`:
+
+```json
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=localhost;Database=InvoiceSystemDB;User Id=sa;Password=YourPassword;TrustServerCertificate=True;"
   },
   "Jwt": {
-    "Key": "YourVeryLongSecretKeyHereAtLeast32Characters",
+    "Key": "KBTm2AbRQJgpw1nhrDUFxv5G9VYo0uei4IZjMykt7PWfE8XzCSLlH6qNdO3sac",
     "Issuer": "InvoiceSystem",
-    "Audience": "InvoiceSystemUsers"
+    "Audience": "InvoiceSystemUsers",
+    "ExpireDays": 7
   }
 }
-Apply database migrations
+```
 
-bash
+3. Apply database migrations:
+
+```bash
 dotnet ef database update
-Run the application
+```
 
-bash
+4. Run the application:
+
+```bash
 dotnet run
-Access the API
+```
 
-Swagger UI: https://localhost:5000/swagger
+5. Access the API:
 
-API Base URL: https://localhost:5000/api
+- Swagger UI: https://localhost:5000/swagger  
+- API Base URL: https://localhost:5000/api  
 
-Database Seeding
+---
+
+### Database Seeding
+
 The system comes with seeded data:
 
-Admin User: username: admin, password: admin123
+- **Admin User:** username: `admin`, password: `admin123`  
+- **Regular Users:**  
+  - `john_doe / user123`  
+  - `jane_smith / user123`  
+- **Sample Invoices:** 3 sample invoices with items  
 
-Regular Users:
+---
 
-john_doe / user123
+## 🔐 Authentication Details
 
-jane_smith / user123
+### JWT Configuration
 
-Sample Invoices: 3 sample invoices with items
-
-🔐 Authentication Details
-JWT Configuration
-json
+```json
 {
   "Jwt": {
     "Key": "64-character-secret-key-for-signing-jwt-tokens",
@@ -438,37 +576,47 @@ json
     "ExpireDays": 7
   }
 }
-Token Structure
-Access Token: Valid for 1 hour, used for API authorization
+```
 
-Refresh Token: Valid for 7 days, used to obtain new access tokens
+---
 
-Claims Included: UserId, Username, Email, Role
+### Token Structure
 
-Password Security
-Passwords are hashed using BCrypt with salt
+- **Access Token:** Valid for 1 hour, used for API authorization  
+- **Refresh Token:** Valid for 7 days, used to obtain new access tokens  
+- **Claims Included:** UserId, Username, Email, Role  
 
-Minimum password length: 6 characters
+---
 
-Username and email must be unique
+### Password Security
 
-🔔 Real-time Notifications
-SignalR Hub Configuration
-Hub Endpoint: /notificationHub
+- Passwords are hashed using BCrypt with salt  
+- Minimum password length: 6 characters  
+- Username and email must be unique  
 
-Authentication: Uses JWT tokens
+---
 
-Groups: Supports user-specific and admin group notifications
+## 🔔 Real-time Notifications
 
-Notification Flow
-Admin creates invoice → Notification sent to assigned user
+### SignalR Hub Configuration
 
-User updates invoice status → Notification sent to admin
+- **Hub Endpoint:** `/notificationHub`  
+- **Authentication:** Uses JWT tokens  
+- **Groups:** Supports user-specific and admin group notifications  
 
-Real-time updates through WebSocket connection
+---
 
-Client Connection Example (JavaScript)
-javascript
+### Notification Flow
+
+- Admin creates invoice → Notification sent to assigned user  
+- User updates invoice status → Notification sent to admin  
+- Real-time updates through WebSocket connection  
+
+---
+
+### Client Connection Example (JavaScript)
+
+```javascript
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/notificationHub", {
         accessTokenFactory: () => localStorage.getItem('accessToken')
@@ -481,88 +629,95 @@ connection.on("ReceiveNotification", (message) => {
 });
 
 await connection.start();
-🎯 Role-Based Access Control
-Admin Permissions
-Create, read, update, delete all invoices
+```
 
-View all users
+---
 
-Assign invoices to users
+## 🎯 Role-Based Access Control
 
-Access all system data
+### Admin Permissions
 
-User Permissions
-View assigned invoices only
+- Create, read, update, delete all invoices  
+- View all users  
+- Assign invoices to users  
+- Access all system data  
 
-Update status of assigned invoices
+---
 
-Download PDF of assigned invoices
+### User Permissions
 
-View personal notifications
+- View assigned invoices only  
+- Update status of assigned invoices  
+- Download PDF of assigned invoices  
+- View personal notifications  
 
-📄 PDF Generation
-Features
-Professional invoice formatting
+---
 
-Automatic calculation of totals
+## 📄 PDF Generation
 
-Company branding support
+### Features
 
-Itemized listing
+- Professional invoice formatting  
+- Automatic calculation of totals  
+- Company branding support  
+- Itemized listing  
+- Download as PDF file  
 
-Download as PDF file
+---
 
-Technology
-Uses QuestPDF library
+### Technology
 
-Supports custom fonts (Lato)
+- Uses QuestPDF library  
+- Supports custom fonts (Lato)  
+- Generates PDF in memory  
+- Returns as downloadable file  
 
-Generates PDF in memory
+---
 
-Returns as downloadable file
+## 🛠️ Development
 
-🛠️ Development
-Adding New Features
-Create model in Models/ folder
+### Adding New Features
 
-Create DTO in DTOs/ folder
+1. Create model in `Models/` folder  
+2. Create DTO in `DTOs/` folder  
+3. Add mapping in `AutoMapperProfile.cs`  
+4. Create service in `Services/` folder  
+5. Create controller in `Controllers/` folder  
+6. Add database migration if needed  
 
-Add mapping in AutoMapperProfile.cs
+---
 
-Create service in Services/ folder
+### Testing
 
-Create controller in Controllers/ folder
+- Use the provided `InvoiceSystem.http` file for API testing  
+- Swagger UI for interactive testing  
+- Postman collection available  
 
-Add database migration if needed
+---
 
-Testing
-Use the provided InvoiceSystem.http file for API testing
+### Logging
 
-Swagger UI for interactive testing
+- Comprehensive logging throughout the application  
+- Log levels: Information, Warning, Error  
+- Console and debug output  
 
-Postman collection available
+---
 
-Logging
-Comprehensive logging throughout the application
+## 🚀 Deployment
 
-Log levels: Information, Warning, Error
+### Production Considerations
 
-Console and debug output
+- Update JWT Key: Generate a secure random key  
+- Configure HTTPS: Enable in production  
+- Database Backup: Set up regular backups  
+- Environment Variables: Move sensitive data to environment variables  
+- CORS: Configure for your frontend domain  
 
-🚀 Deployment
-Production Considerations
-Update JWT Key: Generate a secure random key
+---
 
-Configure HTTPS: Enable in production
+### Docker Support (Future)
 
-Database Backup: Set up regular backups
-
-Environment Variables: Move sensitive data to environment variables
-
-CORS: Configure for your frontend domain
-
-Docker Support (Future)
-dockerfile
+```dockerfile
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -582,33 +737,37 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "InvoiceSystem.dll"]
-📞 Support
+```
+
+---
+
+## 📞 Support
+
 For issues or questions:
 
-Check the API documentation
+- Check the API documentation  
+- Review the database seeding for default credentials  
+- Ensure proper JWT configuration  
+- Verify database connection string  
 
-Review the database seeding for default credentials
+---
 
-Ensure proper JWT configuration
+## 📄 License
 
-Verify database connection string
-
-📄 License
 This project is for educational and demonstration purposes.
 
-🔄 Version History
-v1.0.0 (February 2024)
+---
 
-Initial release
+## 🔄 Version History
 
-Complete authentication system
+**v1.0.0 (February 2024)**  
+- Initial release  
+- Complete authentication system  
+- Invoice CRUD operations  
+- Real-time notifications  
+- PDF generation  
+- Role-based access control  
 
-Invoice CRUD operations
+---
 
-Real-time notifications
-
-PDF generation
-
-Role-based access control
-
-Happy Coding! 🚀
+**Happy Coding! 🚀**
